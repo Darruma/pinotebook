@@ -1,14 +1,17 @@
 import sqlite3
 
-def create_connection():
-    conn = sqlite3.connect('notebook.db')
-    return conn
+conn = sqlite3.connect('notebook.db')
 
-def create_table(conn,schema):
+def create_table(schema):
     c = conn.cursor()
+    c.execute("PRAGMA foreign_keys = ON;")
     with open(schema,'r') as file:
-        c.execute(file.read())
+	    queries = file.read().split(".");
+	    for query in queries:
+		    c.execute(query)
 
-conn = create_connection();
-create_table(conn,"schema.sql")
+def make_query(query):
+	return conn.cursor().execute(query)
+
+create_table("schema")
 

@@ -1,0 +1,41 @@
+CREATE TABLE IF NOT EXISTS User (
+    userid INTEGER NOT NULL PRIMARY KEY,
+    username TEXT NOT NULL,
+    password TEXT NOT NULL,
+    email TEXT NOT NULL
+);
+.
+CREATE TABLE IF NOT EXISTS
+ Day (
+    dayid INTEGER NOT NULL PRIMARY KEY,
+    day TEXT NOT NULL,    
+    userid INTEGER,
+    FOREIGN KEY(userid) REFERENCES User(userid)
+);
+.
+CREATE TABLE IF NOT EXISTS Code (
+    codeid INTEGER NOT NULL PRIMARY KEY,
+    dayid INTEGER,
+    code TEXT NOT NULL,
+    FOREIGN KEY(dayid) REFERENCES Day(dayid)
+);.
+
+CREATE TABLE IF NOT EXISTS Goal (
+    noteid INTEGER NOT NULL PRIMARY KEY,
+    dayid INTEGER,
+    note TEXT NOT NULL,
+    FOREIGN KEY(dayid) REFERENCES Day(dayid)
+);.
+
+CREATE TABLE IF NOT EXISTS Schedule (
+    scheduleid INTEGER NOT NULL PRIMARY KEY,
+    dayid INTEGER,
+    FOREIGN KEY(dayid) REFERENCES Day(dayid)
+);.
+
+CREATE TABLE IF NOT EXISTS Todo (
+    todoid INTEGER NOT NULL PRIMARY KEY,
+    scheduleid INTEGER,
+    time TEXT NOT NULL,
+    FOREIGN KEY(scheduleid) REFERENCES Schedule(scheduleid)
+);.

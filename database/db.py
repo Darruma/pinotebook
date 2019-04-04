@@ -1,6 +1,5 @@
 import sqlite3
 from passlib.hash import sha256_crypt
-from datetime import date
 def connect_db():
     return sqlite3.connect('pibook.db')
 
@@ -9,6 +8,9 @@ def response(success,message):
         "success":success,
         "message":message
     }
+
+
+
 def create_table(schema):
     conn = connect_db()
     c = conn.cursor()
@@ -17,17 +19,49 @@ def create_table(schema):
 		    c.executescript(file.read())
     conn.commit()
 
-def create_days():
-    print('creating days')
+def create_days(date):
     conn = connect_db()
     c = conn.cursor()
     c.execute('SELECT userid from User')
     userids = c.fetchall()
-    d = str(date.today())
-    print(userids)
     for id in userids:
-        c.execute('INSERT INTO Day VALUES (NULL,?,?)',[d,id[0] ])
+        c.execute('INSERT INTO Day VALUES (NULL,?,?)',[date,id[0]])
+        conn.commit()
+        create_schedule(c.lastrowid)
+    
+
+def create_schedule(day_id):
+    conn = connect_db()
+    c = conn.cursor()
+    c.execute('INSERT INTO Schedule VALUES (NULL,?)',[day_id])
     conn.commit()
+
+def create_note(day_id,note):
+    conn = connect_db()
+    c = conn.cursor()
+    c.execute('INSERT INTO Notes VALUES (NULL,?,?)',[day_id,note])
+    conn.commit()
+
+def delete_note(note_id):
+    conn = connect_db()
+    c = conn.cursor()
+    c.execute('DELETE FROM Notes WHERE noteid = ?',[note_id])
+    conn.commit()
+
+
+
+def delete_goal(goal_id):
+    conn = connect_db()
+    c = conn.cursor()
+    c.execute('DELETE FROM Goals WHERE goalid = ?',[goal_id])
+    conn.commit()
+
+def create_goal(day_id,goal):
+    conn = connect_db()
+    c = conn.cursor()
+    c.execute('INSERT INTO Goals VALUES (NULL,?,?)',[day_id,goal])
+    conn.commit()
+
 
 def signup_user(username,password,email):
     conn = connect_db()

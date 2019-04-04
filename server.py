@@ -1,5 +1,7 @@
 from flask import Flask,request,jsonify
 from database.db import signup_user,login_user,create_days
+from datetime import date
+
 app = Flask(__name__)
 
 @app.route('/')
@@ -15,4 +17,4 @@ def signup():
 
 signup_user('bob','poop','bob@gmail.com')
 signup_user('steve','poopdescoop','mike@gmail.com')
-create_days()
+create_days(str(date.today()))

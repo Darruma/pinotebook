@@ -3,12 +3,19 @@ from passlib.hash import sha256_crypt
 def connect_db():
     return sqlite3.connect('pibook.db')
 
-def response(success,message):
+def response(success,data):
     return {
         "success":success,
-        "message":message
+        "data":data
     }
 
+def get_day_info(user_id):
+    conn = connect_db()
+    c = conn.cursor()
+    c.execute('SELECT dayid,day FROM Day WHERE userid = ?',[user_id])
+    print('getting day info')
+    day_info = c.fetchall()
+    print(day_info)
 
 
 def create_table(schema):
@@ -19,15 +26,12 @@ def create_table(schema):
 		    c.executescript(file.read())
     conn.commit()
 
-def create_days(date):
+def create_day(date,user_id):
     conn = connect_db()
     c = conn.cursor()
-    c.execute('SELECT userid from User')
-    userids = c.fetchall()
-    for id in userids:
-        c.execute('INSERT INTO Day VALUES (NULL,?,?)',[date,id[0]])
-        conn.commit()
-        create_schedule(c.lastrowid)
+    c.execute('INSERT INTO Day VALUES (NULL,?,?)',[date,user_id])
+    conn.commit()
+    create_schedule(c.lastrowid)
     
 
 def create_schedule(day_id):
@@ -74,19 +78,22 @@ def signup_user(username,password,email):
         hashed_password = sha256_crypt.encrypt(password)
         c.execute("INSERT INTO User VALUES (NULL,?,?,?)",[username,hashed_password,email])
         conn.commit()
-        return True
+        return response(True,c.lastrowid)
     else:
-        return False
+        print('err')
+        return response(False,'Username already exists')
 
-def login_user(username,try_password):
+def signin_user(username,try_password):
     conn = connect_db()
     c = conn.cursor()
     c.execute("SELECT password from USER where username = ?",[username])
     correct_password = c.fetchone()
     if correct_password:
         if sha256_crypt.verify(try_password,correct_password):
-            return response(True,'Logged in')
+            userid = c.lastrowid  
+            return response(True,userid)
         else:
+            print('err')
             return response(False,'Wrong password')
     else:
         return response(False,'Wrong username')

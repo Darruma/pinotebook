@@ -1,5 +1,6 @@
 import sqlite3
 from passlib.hash import sha256_crypt
+
 def connect_db():
     return sqlite3.connect('pibook.db')
 
@@ -19,6 +20,7 @@ def get_day_info(user_id):
 
 
 def create_table(schema):
+    print('CREATING DATABASE')
     conn = connect_db()
     c = conn.cursor()
     c.execute("PRAGMA foreign_keys = ON;")
@@ -98,8 +100,5 @@ def signin_user(username,try_password):
     else:
         return response(False,'Wrong username')
 
-        
-
-    
-create_table("schema")
+create_table("database/schema")
 

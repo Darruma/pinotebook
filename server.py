@@ -1,9 +1,13 @@
 from flask import Flask,request,jsonify
 from database.db import * 
+from database.user import *
 from datetime import date
 import os 
+
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
+
+
 @app.route('/')
 def hello():
     return "Hello"
@@ -24,9 +28,11 @@ def signin():
             return jsonify(success=True,data='Signed in')
         else:
             return jsonify(success=False,data='Error , please try again')
+
 if __name__ == "__main__":
         app.run(host='0.0.0.0')
 
+        
 bob_id = signup_user('bob','poop','bob@gmail.com')['data']
 steve_id = signup_user('steve','poopdescoop','mike@gmail.com')['data']
 print("here")
